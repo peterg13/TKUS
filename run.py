@@ -25,9 +25,14 @@ gc.queue_research(bc.UnitType.Knight)
 
 my_team = gc.team()
 
+thereIsARocket = 0
+
+
+
 while True:
     # We only support Python 3, which means brackets around print()
     print('pyround:', gc.round())
+    print('karboynite total:',gc.karbonite());
 
     # frequent try/catches are a good idea
     try:
@@ -48,6 +53,10 @@ while True:
                     print('produced a knight!')
                     continue
 
+
+
+
+
             # first, let's look for nearby blueprints to work on
             location = unit.location
             if location.is_on_map():
@@ -55,9 +64,15 @@ while True:
                 for other in nearby:
                     if unit.unit_type == bc.UnitType.Worker and gc.can_build(unit.id, other.id):
                         gc.build(unit.id, other.id)
-                        print('built a factory!')
+                        # print('built a factory!')
                         # move onto the next unit
-                        continue
+                        continue 
+
+                    if unit.unit_type == bc.UnitType.Rocket and gc.can_load(unit.id, other.id):
+                    	gc.load(unit.id, other.id)
+                    	print('unit has been loaded into rocket')
+                    	continue
+
                     if other.team != my_team and gc.is_attack_ready(unit.id) and gc.can_attack(unit.id, other.id):
                         print('attacked a thing!')
                         gc.attack(unit.id, other.id)
@@ -67,12 +82,29 @@ while True:
             # pick a random direction:
             d = random.choice(directions)
 
+            #try to build a rocket
+            if gc.karbonite() > bc.UnitType.Rocket.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Rocket, d):
+            	if thereIsARocket == 0:
+	                gc.blueprint(unit.id, bc.UnitType.Rocket, d)
+	                thereIsARocket = 1
+	                print('built a rocket!')
+
             # or, try to build a factory:
             if gc.karbonite() > bc.UnitType.Factory.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Factory, d):
                 gc.blueprint(unit.id, bc.UnitType.Factory, d)
+                print('built a factory!')
             # and if that fails, try to move
             elif gc.is_move_ready(unit.id) and gc.can_move(unit.id, d):
                 gc.move_robot(unit.id, d)
+
+
+            # Okay now, if we are a rocket let's launch ourselves
+            if unit.unit_type == bc.UnitType.Rocket:
+           		# print('trying to launch a rocket to marks', bc.MapLocation(bc.Planet.Mars, 0, 0))
+            	if gc.can_launch_rocket(unit.id, bc.MapLocation(bc.Planet.Mars, 0, 0)):
+            		gc.launch_rocket(unit.id, bc.MapLocation(bc.Planet.Mars, 0, 0))
+            		print('Rocket Launched!')
+
 
     except Exception as e:
         print('Error:', e)
