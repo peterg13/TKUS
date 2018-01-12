@@ -2,6 +2,7 @@ import battlecode as bc
 import random
 import sys
 import traceback
+import rocketMan
 
 print("pystarting")
 
@@ -56,7 +57,7 @@ while True:
 
 
 
-
+            # worker logic
             # first, let's look for nearby blueprints to work on
             location = unit.location
             if location.is_on_map():
@@ -100,10 +101,7 @@ while True:
 
             # Okay now, if we are a rocket let's launch ourselves
             if unit.unit_type == bc.UnitType.Rocket:
-           		# print('trying to launch a rocket to marks', bc.MapLocation(bc.Planet.Mars, 0, 0))
-            	if gc.can_launch_rocket(unit.id, bc.MapLocation(bc.Planet.Mars, 0, 0)):
-            		gc.launch_rocket(unit.id, bc.MapLocation(bc.Planet.Mars, 0, 0))
-            		print('Rocket Launched!')
+           		rocketMan.handleRocket(unit, gc, bc)
 
 
     except Exception as e:
