@@ -32,7 +32,7 @@ my_team = gc.team()
 # earth = gc.starting_map(bc.Planet.Earth)
 # mars = gc.starting_map(bc.Planet.Mars)
 
-mapArray.initializeMapArrays(gc,bc)
+persistentMap = mapArray.smartMap(gc,bc)
 
 # earthMap = [[0 for x in range(20)] for y in range(20)]
 
@@ -52,16 +52,14 @@ while True:
         for unit in gc.my_units():
 
             if gc.is_move_ready(unit.id):
-                # print(unit.unit_type, "is move ready!")
-                # print(unit.location)
+                print(unit.location)
                 #  check which directions are moveable
                 for x in range (0, len(directions)):
                     if gc.can_move(unit.id, directions[x]):
-                        b = 3 + 2
+                        print("you can move ",directions[x])
                     else:
-                        y = x
-                # let's try to crawl around the edge of the map
-                # let's first move to the bottom left corner
+                        print("you cannot move in that direction")
+
 
 
 
