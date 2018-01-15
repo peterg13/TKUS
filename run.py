@@ -37,11 +37,10 @@ my_team = gc.team()
 
 persistentMap = mapArray.smartMap(gc,bc)
 
+
+
+
 # earthMap = [[0 for x in range(20)] for y in range(20)]
-
-
-
-
 
 while True:
     # We only support Python 3, which means brackets around print()
