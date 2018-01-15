@@ -39,7 +39,7 @@ class smartMap:
 		if mapLocation.planet == bc.Planet.Earth:
 			return self.earthMap[mapLocation.x][mapLocation.y]
 
-		if mapLocation.planet == bc.Planet.Earth:
+		if mapLocation.planet == bc.Planet.Mars:
 			return self.marsMap[mapLocation.x][mapLocation.y]
 	# Earth
 	# for j in range(earth.width):
