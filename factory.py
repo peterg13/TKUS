@@ -6,7 +6,7 @@ directions = list(bc.Direction)
 
 
 def factoryLogic(unit, gc):
-    print("factory turn")
+    #print("factory turn")
     garrison = unit.structure_garrison()
     if len(garrison) > 0:
         d = random.choice(directions)

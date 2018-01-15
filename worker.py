@@ -26,7 +26,7 @@ def workerLogic(unit, gc):
     global currentFactories
 
 
-    print(currentRockets)
+    #print(currentRockets)
     d = random.choice(directions)
 
     #creates a rocket
