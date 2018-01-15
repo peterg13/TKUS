@@ -42,8 +42,8 @@ persistentMap = mapArray.smartMap(gc,bc)
 
 while True:
     # We only support Python 3, which means brackets around print()
-    print('pyround:', gc.round())
-    print('karboynite total:',gc.karbonite())
+    #print('pyround:', gc.round())
+    #print('karboynite total:',gc.karbonite())
     
     # frequent try/catches are a good idea
     try:
@@ -51,14 +51,50 @@ while True:
         # walk through our units:
         for unit in gc.my_units():
 
-            if gc.is_move_ready(unit.id):
-                print(unit.location)
+            #Worker logic
+            if unit.unit_type == bc.UnitType.Worker:
+                #create a factory
+                d = random.choice(directions)
+                if gc.karbonite() > bc.UnitType.Factory.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Factory, d):
+                    gc.blueprint(unit.id, bc.UnitType.Factory, d)
+
+                #build nearby factories
+                workerLoc = unit.location
+                if workerLoc.is_on_map():
+                    nearbyUnits = gc.sense_nearby_units(workerLoc.map_location(), 2)
+                    for otherUnits in nearbyUnits:
+                        if gc.can_build(unit.id, otherUnits.id):
+                            gc.build(unit.id, otherUnits.id)
+                            print('built a factory!')
+                            # move onto the next nearby unit
+                            continue
+
+
+            #produces knights
+            if unit.unit_type == bc.UnitType.Factory:
+                garrison = unit.structure_garrison()
+                if len(garrison) > 0:
+                    d = random.choice(directions)
+                    if gc.can_unload(unit.id, d):
+                        print('unloaded a knight!')
+                        gc.unload(unit.id, d)
+                        continue
+                elif gc.can_produce_robot(unit.id, bc.UnitType.Knight):
+                    try:
+                        gc.produce_robot(unit.id, bc.UnitType.Knight)
+                        print('produced a knight!')
+                        continue
+                    except:
+                        print('Error producing a knight')
+
+            #if gc.is_move_ready(unit.id):
+               # print(unit.location)
                 #  check which directions are moveable
-                for x in range (0, len(directions)):
-                    if gc.can_move(unit.id, directions[x]):
-                        print("you can move ",directions[x])
-                    else:
-                        print("you cannot move in that direction")
+               # for x in range (0, len(directions)):
+                   # if gc.can_move(unit.id, directions[x]):
+                    #    print("you can move ",directions[x])
+                   # else:
+                    #    print("you cannot move in that direction")
 
 
 
