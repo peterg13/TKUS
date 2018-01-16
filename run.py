@@ -56,15 +56,15 @@ while True:
         for unit in gc.units():
             if unit.unit_type == bc.UnitType.Factory:
                 unitCounter.currentFactories+=1
-            if unit.unit_type == bc.UnitType.Rocket:
+            elif unit.unit_type == bc.UnitType.Rocket:
                 unitCounter.currentRockets+=1
-            if unit.unit_type == bc.UnitType.Worker:
+            elif unit.unit_type == bc.UnitType.Worker:
                 unitCounter.currentWorkers+=1
-            if unit.unit_type == bc.UnitType.Knight:
+            elif unit.unit_type == bc.UnitType.Knight:
                 unitCounter.currentKnights+=1
-            if unit.unit_type == bc.UnitType.Mage:
+            elif unit.unit_type == bc.UnitType.Mage:
                 unitCounter.currentMages+=1
-            if unit.unit_type == bc.UnitType.Healer:
+            else:
                 unitCounter.currentHealers+=1
 
         print(unitCounter.currentWorkers)
