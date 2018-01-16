@@ -70,7 +70,7 @@ while True:
         print(unitCounter.currentWorkers)
         # walk through our units:
         for unit in gc.my_units():
-
+            
             #Worker logic
             if unit.unit_type == bc.UnitType.Worker:
                 worker.workerLogic(unit, gc)
