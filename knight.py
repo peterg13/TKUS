@@ -14,8 +14,8 @@ def knightLogic(unitParam, gcParam):
     gc = gcParam
 
     #movement logic will be skipped if knight is in space or in garrison
-    if not unit.location.is_in_garrison() and not unit.location.is_in_space():
-        d = getMoveDirection()
+    # if not unit.location.is_in_garrison() and not unit.location.is_in_space():
+    #     d = getMoveDirection()
 
 #current idea for knight movement:
 #figure out how many of our units are in each quadrant.  Have the knights move to the quadrant with the least friendly units.

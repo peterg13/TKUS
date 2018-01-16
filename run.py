@@ -8,6 +8,7 @@ import rocketMan
 import factory
 import worker
 import knight
+import ranger
 
 print("pystarting")
 
@@ -26,8 +27,9 @@ random.seed(6137)
 # let's start off with some research!
 # we can queue as much as we want.
 gc.queue_research(bc.UnitType.Rocket)
-gc.queue_research(bc.UnitType.Worker)
-gc.queue_research(bc.UnitType.Knight)
+gc.queue_research(bc.UnitType.Ranger)
+gc.queue_research(bc.UnitType.Ranger)
+gc.queue_research(bc.UnitType.Ranger)
 
 my_team = gc.team()
 
@@ -37,6 +39,7 @@ my_team = gc.team()
 # mars = gc.starting_map(bc.Planet.Mars)
 
 persistentMap = mapArray.smartMap(gc,bc)
+persistentMap.initializeMapArrays()
 unitCounter = unitCounter.unitCounter()
 
 
@@ -46,12 +49,12 @@ unitCounter = unitCounter.unitCounter()
 
 while True:
     # We only support Python 3, which means brackets around print()
-    #print('pyround:', gc.round())
+    # print('pyround:', gc.round())
     #print('karboynite total:',gc.karbonite())
     
     # frequent try/catches are a good idea
     try:
-        #reset unit counter and count units
+        #reset unit counter and count units this code only executes once per turn
         unitCounter.resetCount()
         for unit in gc.units():
             if unit.unit_type == bc.UnitType.Factory:
@@ -67,21 +70,23 @@ while True:
             else:
                 unitCounter.currentHealers+=1
 
-        print(unitCounter.currentWorkers)
         # walk through our units:
         for unit in gc.my_units():
             
             #Worker logic
             if unit.unit_type == bc.UnitType.Worker:
-                worker.workerLogic(unit, gc)
+                worker.workerLogic(unit, gc, unitCounter)
 
             #factory logic
             if unit.unit_type == bc.UnitType.Factory:
-                factory.factoryLogic(unit, gc)
+                factory.factoryLogic(unit, gc, unitCounter)
 
             #knight logic
             if unit.unit_type == bc.UnitType.Knight:
                 knight.knightLogic(unit, gc)
+
+            if unit.unit_type == bc.UnitType.Ranger:
+                ranger.rangerLogic(unit, gc)
 
             #if gc.is_move_ready(unit.id):
                # print(unit.location)

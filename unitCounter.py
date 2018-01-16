@@ -5,6 +5,7 @@ class unitCounter:
     currentRockets = 0
     currentWorkers = 0
     currentKnights = 0
+    currentRangers = 0
     currentMages = 0
     currentHealers = 0
 
@@ -13,5 +14,6 @@ class unitCounter:
         self.currentRockets = 0
         self.currentWorkers = 0
         self.currentKnights = 0
+        self.currentRangers = 0
         self.currentMages = 0
         self.currentHealers = 0

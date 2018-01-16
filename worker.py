@@ -21,7 +21,7 @@ currentFactories = 0
 
 directions = list(bc.Direction)
 
-def workerLogic(unit, gc):
+def workerLogic(unit, gc, unitCounter):
     global currentRockets
     global currentFactories
 
@@ -30,7 +30,7 @@ def workerLogic(unit, gc):
     d = random.choice(directions)
 
     #creates a rocket
-    if currentRockets < maxRockets:
+    if unitCounter.currentRockets < maxRockets:
         #checks if you have enough karbonite and can built in the given location
         if gc.karbonite() > bc.UnitType.Rocket.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Rocket, d):
             gc.blueprint(unit.id, bc.UnitType.Rocket, d)
@@ -38,11 +38,18 @@ def workerLogic(unit, gc):
     
 
     #create a factory
-    if currentFactories < maxFactories:
+    if unitCounter.currentFactories < maxFactories:
         #checks if you have enough karbonite and can built in the given location
         if gc.karbonite() > bc.UnitType.Factory.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Factory, d):
             gc.blueprint(unit.id, bc.UnitType.Factory, d)
             currentFactories += 1
+
+    # replicate a worker only if there are more factories than workers
+    if unitCounter.currentWorkers < unitCounter.currentFactories:
+        if gc.can_replicate(unit.id, d):
+            gc.replicate(unit.id, d)
+
+            print(unit.id, "replicated")
 
     #build nearby factories
     workerLoc = unit.location
@@ -55,3 +62,15 @@ def workerLogic(unit, gc):
                 # print('built a factory!')
                 # move onto the next nearby unit
                 continue
+
+    # check if there is any karbonite around to harvest
+    for d in directions:
+        direction = directions[d]
+        if gc.can_harvest(unit.id, direction):
+            gc.harvest(unit.id, direction)
+            # print("karbonite harvested!")
+            break
+
+    # if you don't have anything better to do. Move.
+    if gc.is_move_ready(unit.id) and gc.can_move(unit.id, d):
+        gc.move_robot(unit.id, d)
