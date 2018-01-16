@@ -2,8 +2,9 @@ import battlecode as bc
 import random
 import sys
 import traceback
-import rocketMan
 import mapArray
+import unitCounter
+import rocketMan
 import factory
 import worker
 import knight
@@ -36,6 +37,7 @@ my_team = gc.team()
 # mars = gc.starting_map(bc.Planet.Mars)
 
 persistentMap = mapArray.smartMap(gc,bc)
+unitCounter = unitCounter.unitCounter()
 
 
 
@@ -49,7 +51,23 @@ while True:
     
     # frequent try/catches are a good idea
     try:
+        #reset unit counter and count units
+        unitCounter.resetCount()
+        for unit in gc.units():
+            if unit.unit_type == bc.UnitType.Factory:
+                unitCounter.currentFactories+=1
+            if unit.unit_type == bc.UnitType.Rocket:
+                unitCounter.currentRockets+=1
+            if unit.unit_type == bc.UnitType.Worker:
+                unitCounter.currentWorkers+=1
+            if unit.unit_type == bc.UnitType.Knight:
+                unitCounter.currentKnights+=1
+            if unit.unit_type == bc.UnitType.Mage:
+                unitCounter.currentMages+=1
+            if unit.unit_type == bc.UnitType.Healer:
+                unitCounter.currentHealers+=1
 
+        print(unitCounter.currentWorkers)
         # walk through our units:
         for unit in gc.my_units():
 

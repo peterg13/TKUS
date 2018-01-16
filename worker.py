@@ -38,7 +38,7 @@ def workerLogic(unit, gc):
     
 
     #create a factory
-    if currentFactories < 3:
+    if currentFactories < maxFactories:
         #checks if you have enough karbonite and can built in the given location
         if gc.karbonite() > bc.UnitType.Factory.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Factory, d):
             gc.blueprint(unit.id, bc.UnitType.Factory, d)
