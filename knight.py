@@ -13,18 +13,26 @@ def knightLogic(unitParam, gcParam):
     unit = unitParam
     gc = gcParam
 
+
     #movement logic will be skipped if knight is in space or in garrison
-    # if not unit.location.is_in_garrison() and not unit.location.is_in_space():
-    #     d = getMoveDirection()
+    if not unit.location.is_in_garrison() and not unit.location.is_in_space():
+        d = getMoveDirection()
+
+        #if the knight can move towards the center it will, otherwise it will choose a random direction
+        if gc.is_move_ready(unit.id) and gc.can_move(unit.id, d):
+            gc.move_robot(unit.id, d)
+        else:
+            # pick a random direction:
+            d = random.choice(directions)
+            if gc.is_move_ready(unit.id) and gc.can_move(unit.id, d):
+                gc.move_robot(unit.id, d)
+    
 
 #current idea for knight movement:
-#figure out how many of our units are in each quadrant.  Have the knights move to the quadrant with the least friendly units.
+#figure out how many of our non-knight units are in each quadrant.  Have the knights move to the quadrant with the least friendly units.
 #once in that quadrant they can move randomly
 def getMoveDirection():
-    quad1 = 0 #top right
-    quad2 = 0 #top left
-    quad3 = 0 #bottom left
-    quad4 = 0 #bottom right
+    quads = [0, 0, 0, 0] #quads[0] = quadrant 1, quads[1] = quadrant 2, etc
 
     mapHeight = 0
     mapWidth = 0
@@ -39,27 +47,52 @@ def getMoveDirection():
         mapHeight = gc.starting_map(bc.Planet.Mars).height
         mapWidth = gc.starting_map(bc.Planet.Mars).width
 
-
+    #loops through and counts how many units are in each quadrant
     for myUnit in gc.my_units():
-        x = myUnit.location.map_location().x
-        y = myUnit.location.map_location().y
-        if x < mapWidth/2:
-            if y < mapHeight/2:
-                quad3 += 1
+        #if a unit is in space, in the garrison, or is a knight it will skip them
+        if not myUnit.location.is_in_garrison() and not myUnit.location.is_in_space() and myUnit.unit_type != bc.UnitType.Knight:
+            x = myUnit.location.map_location().x
+            y = myUnit.location.map_location().y
+            if x < mapWidth/2:
+                if y < mapHeight/2:
+                    quads[2] += 1
+                else:
+                    quads[1] += 1
             else:
-                quad2 += 1
-        else:
-            if y < mapHeight/2:
-                quad4 += 1
-            else:
-                quad1 += 1
+                if y < mapHeight/2:
+                    quads[3] += 1
+                else:
+                    quads[0] += 1
 
-    if gc.round() % 100 == 0:
-        print("Quad1: %s, Quad2: %s, Quad3: %s, Quad4 %s" % (quad1, quad2, quad3, quad4))
+    #gets the population of the smallest populated quadrant.  Then sees if there are other quadrants with the same number and puts it into a list.
+    #if so it chooses a random quadrant from the list
+    leastPopQuadNum = min(quads)
+    smallestQuads = []
+    for i in range (0, len(quads)):
+        if leastPopQuadNum == quads[i]:
+            smallestQuads.append(i)
+    
+    moveToQuad = smallestQuads[random.randint(0, len(smallestQuads) - 1)]
 
+    #creates a newmapLocation which will be the center of the quadrant we need to go to
+    quadCenter = bc.MapLocation(unit.location.map_location().planet, 0, 0)
 
+    #sets the center of the quadrants coords
+    if moveToQuad == 0:
+        quadCenter.x = int(mapWidth - mapWidth/4)
+        quadCenter.y = int(mapHeight - mapHeight/4)
+    elif moveToQuad == 1:
+        quadCenter.x = int(mapWidth/4)
+        quadCenter.y = int(mapHeight - mapHeight/4)
+    elif moveToQuad == 2:
+        quadCenter.x = int(mapWidth)
+        quadCenter.y = int(mapHeight/4)
+    else:
+        quadCenter.x = int(mapWidth - mapWidth/4)
+        quadCenter.y = int(mapHeight/4)
 
-    #the direction that will be returned
-    returnDirection = 0
+    returnDirection = unit.location.map_location().direction_to(quadCenter)
+    
+    return returnDirection
 
 
