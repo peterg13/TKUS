@@ -50,7 +50,7 @@ unitCounter = unitCounter.unitCounter()
 while True:
     # We only support Python 3, which means brackets around print()
     # print('pyround:', gc.round())
-    #print('karboynite total:',gc.karbonite())
+    # print('karboynite total:',gc.karbonite())
     
     # frequent try/catches are a good idea
     try:
@@ -58,28 +58,31 @@ while True:
         unitCounter.resetCount()
         for unit in gc.units():
             if unit.unit_type == bc.UnitType.Factory:
-                unitCounter.currentFactories+=1
+                unitCounter.currentFactories.append(unit)
             elif unit.unit_type == bc.UnitType.Rocket:
-                unitCounter.currentRockets+=1
+                unitCounter.currentRockets.append(unit)
             elif unit.unit_type == bc.UnitType.Worker:
-                unitCounter.currentWorkers+=1
+                unitCounter.currentWorkers.append(unit)
             elif unit.unit_type == bc.UnitType.Knight:
-                unitCounter.currentKnights+=1
+                unitCounter.currentKnights.append(unit)
             elif unit.unit_type == bc.UnitType.Mage:
-                unitCounter.currentMages+=1
+                unitCounter.currentMages.append(unit)
             else:
-                unitCounter.currentHealers+=1
+                unitCounter.currentHealers.append(unit)
 
         # walk through our units:
         for unit in gc.my_units():
             
-            #Worker logic
-            if unit.unit_type == bc.UnitType.Worker:
-                worker.workerLogic(unit, gc, unitCounter)
+
 
             #factory logic
             if unit.unit_type == bc.UnitType.Factory:
-                factory.factoryLogic(unit, gc, unitCounter)
+                factory.factoryLogic(unit, gc, unitCounter, persistentMap)
+                persistentMap.updateUnit(unit.location.map_location(), 'Factory', 'Friendly')
+
+            #Worker logic
+            if unit.unit_type == bc.UnitType.Worker:
+                worker.workerLogic(unit, gc, unitCounter, persistentMap)
 
             #knight logic
             if unit.unit_type == bc.UnitType.Knight:
@@ -87,6 +90,7 @@ while True:
 
             if unit.unit_type == bc.UnitType.Ranger:
                 ranger.rangerLogic(unit, gc)
+                
 
             #if gc.is_move_ready(unit.id):
                # print(unit.location)

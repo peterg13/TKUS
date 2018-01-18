@@ -80,6 +80,20 @@ class smartMap:
 		if(data.planet == 'mars'):
 			self.marsMap[data.x][data.y] = 0
 
+	def updateKarbonite(self, mapLoc, amount):
+		if mapLoc.planet == self.bc.Planet.Earth:
+			self.earthMap[mapLoc.x][mapLoc.y].karbonite -= amount
+			print(self.earthMap[mapLoc.x][mapLoc.y].karbonite)
+		else:
+			self.marsMap[mapLoc.x][mapLoc.y].karbonite -= amount
+
+	def updateUnit(self, mapLoc, unitType, team):
+		print("updating map")
+		if mapLoc.planet == self.bc.Planet.Earth:
+			self.earthMap[mapLoc.x][mapLoc.y].unit = unitType
+			self.earthMap[mapLoc.x][mapLoc.y].team = team
+			self.earthMap[mapLoc.x][mapLoc.y].passable = False
+
 	def getMapData(self, mapLocation):
 		if mapLocation.planet == bc.Planet.Earth:
 			return self.earthMap[mapLocation.x][mapLocation.y]
