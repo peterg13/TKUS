@@ -18,7 +18,7 @@ maxKnights = 10
 currentRockets = 0
 currentFactories = 0
 harvestTotal = 0
-targetFcound = False
+targetFound = False
 targetLoc = 0
 
 directions = list(bc.Direction)
@@ -28,7 +28,7 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
     global currentFactories
     global distance
     global harvestTotal
-    global targetFcound
+    global targetFound
     global targetLoc
 
 
@@ -61,11 +61,15 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
     workerMapLoc = workerLoc.map_location()
     if workerLoc.is_on_map():
         #gets all nearby factories at the given location
-        nearbyUnits = gc.sense_nearby_units_by_type(workerLoc.map_location(), 2, bc.UnitType.Factory)
-        for nearbyFactory in nearbyUnits:
-            if gc.can_build(unit.id, nearbyFactory.id):
-                gc.build(unit.id, nearbyFactory.id)
-                continue
+        nearbyUnits = gc.sense_nearby_units(workerLoc.map_location(), 2)
+        for i in nearbyUnits:
+            if i.unit_type == bc.UnitType.Factory:
+                if gc.can_build(unit.id, i.id):
+                    gc.build(unit.id, i.id)
+            elif i.unit_type == bc.UnitType.Rocket:
+                if gc.can_build(unit.id, i.id):
+                    gc.build(unit.id, i.id)
+                    continue
 
     # check if there is any karbonite around to harvest
     for i in directions:
@@ -81,18 +85,26 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
     # if you don't have anything better to do. Move.
     if gc.is_move_ready(unit.id):
         # if a factory needs to be built move towards it
-        if not targetFcound:
+        if not targetFound:
             for i in range(len(unitCounter.currentFactories)):
                 thisFactory = unitCounter.currentFactories[i]
                 if(thisFactory.health<thisFactory.max_health):
                     print("targeting Factory")
                     targetLoc = thisFactory.location.map_location()
-                    targetFcound = True
+                    targetFound = True
+        
+            if not targetFound:
+                for i in range(len(unitCounter.currentRockets)):
+                    thisRocket = unitCounter.currentRockets[i]
+                    if(thisRocket.health<thisRocket.max_health):
+                        print("targeting Rocket")
+                        targetLoc = thisRocket.location.map_location()
+                        targetFound = True
                     
         # locate closest karbonite deposit that still has karbonite in it
         
             
-            if workerMapLoc.planet == bc.Planet.Earth and not targetFcound:
+            if workerMapLoc.planet == bc.Planet.Earth and not targetFound:
                 print("looking for karbonite")
                 distance = 100000
                 for y in range(len(persistentMap.earthMap)):
@@ -106,13 +118,13 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
                             if newDistance < distance:
                                 distance = newDistance
                                 targetLoc = currentLoc
-                                targetFcound = True
+                                targetFound = True
                                 print("targeting karbonite at", targetLoc)
 
-        elif targetFcound:
+        elif targetFound:
             direction = workerMapLoc.direction_to(targetLoc)
             if persistentMap.earthMap[targetLoc.x][targetLoc.y].karbonite or not persistentMap.earthMap[targetLoc.x][targetLoc.y].passable< 0:
-                targetFcound = False
+                targetFound = False
         
             
             if gc.can_move(unit.id, direction):

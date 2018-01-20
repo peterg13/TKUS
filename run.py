@@ -82,6 +82,11 @@ while True:
                 factory.factoryLogic(unit, gc, unitCounter, persistentMap)
                 persistentMap.updateUnit(unit.location.map_location(), 'Factory', 'Friendly')
 
+            #Rocket Logic
+            if unit.unit_type == bc.UnitType.Rocket:
+                rocketMan.handleRocket(unit, gc, persistentMap)
+                persistentMap.updateUnit(unit.location.map_location(), 'Rocket', 'Friendly')
+
             #Worker logic
             elif unit.unit_type == bc.UnitType.Worker:
                 worker.workerLogic(unit, gc, unitCounter, persistentMap)
@@ -90,24 +95,17 @@ while True:
             elif unit.unit_type == bc.UnitType.Knight:
                 knight.knightLogic(unit, gc)
 
+            #Ranger logic
             elif unit.unit_type == bc.UnitType.Ranger:
                 ranger.rangerLogic(unit, gc)
 
+            #Mage logic
             elif unit.unit_type == bc.UnitType.Mage:
                 mage.mageLogic(unit, gc)
 
+            #Healer Logic
             elif unit.unit_type == bc.UnitType.Healer:
                 healer.healerLogic(unit, gc)
-                
-
-            #if gc.is_move_ready(unit.id):
-               # print(unit.location)
-                #  check which directions are moveable
-               # for x in range (0, len(directions)):
-                   # if gc.can_move(unit.id, directions[x]):
-                    #    print("you can move ",directions[x])
-                   # else:
-                    #    print("you cannot move in that direction")
 
 
 
