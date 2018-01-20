@@ -9,6 +9,8 @@ import factory
 import worker
 import knight
 import ranger
+import mage
+import healer
 
 print("pystarting")
 
@@ -81,15 +83,21 @@ while True:
                 persistentMap.updateUnit(unit.location.map_location(), 'Factory', 'Friendly')
 
             #Worker logic
-            if unit.unit_type == bc.UnitType.Worker:
+            elif unit.unit_type == bc.UnitType.Worker:
                 worker.workerLogic(unit, gc, unitCounter, persistentMap)
 
             #knight logic
-            if unit.unit_type == bc.UnitType.Knight:
+            elif unit.unit_type == bc.UnitType.Knight:
                 knight.knightLogic(unit, gc)
 
-            if unit.unit_type == bc.UnitType.Ranger:
+            elif unit.unit_type == bc.UnitType.Ranger:
                 ranger.rangerLogic(unit, gc)
+
+            elif unit.unit_type == bc.UnitType.Mage:
+                mage.mageLogic(unit, gc)
+
+            elif unit.unit_type == bc.UnitType.Healer:
+                healer.healerLogic(unit, gc)
                 
 
             #if gc.is_move_ready(unit.id):
