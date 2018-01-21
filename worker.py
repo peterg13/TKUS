@@ -1,5 +1,6 @@
 import battlecode as bc
 import random
+import targetList
 
 #Rocket Rules
 #1. Rockets are the number one priority if you can build a rocket do it
@@ -11,15 +12,14 @@ import random
 #1. Factories are always the first thing to build
 #2. Each team gets 10 Karbonite per round and a factory takes 5 rounds to build a robot. Unless we're mining deposits we should never have more than 3 factories
 maxRockets = 1
-maxFactories = 3
+maxFactories = 10
 maxRangers = 5
 maxKnights = 10
 
-currentRockets = 0
-currentFactories = 0
 harvestTotal = 0
-targetFound = False
-targetLoc = 0
+
+workerTargetList = targetList.targetList()
+
 
 directions = list(bc.Direction)
 
@@ -28,18 +28,23 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
     global currentFactories
     global distance
     global harvestTotal
-    global targetFound
-    global targetLoc
+    currentTarget = 0
 
+    # print(workerTargetList)
+
+    
 
     d = random.choice(directions)
 
+    # ---------------------------------------------------#
+    #             Build Decisions                        #
+    # ---------------------------------------------------#
+
     #creates a rocket
-    if len(unitCounter.currentRockets) < maxRockets:
-        #checks if you have enough karbonite and can built in the given location
-        if gc.karbonite() > bc.UnitType.Rocket.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Rocket, d):
-            gc.blueprint(unit.id, bc.UnitType.Rocket, d)
-            currentRockets += 1
+    # if len(unitCounter.currentRockets) < maxRockets:
+    #     #checks if you have enough karbonite and can built in the given location
+    #     if gc.karbonite() > bc.UnitType.Rocket.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Rocket, d):
+    #         gc.blueprint(unit.id, bc.UnitType.Rocket, d)
     
 
     #create a factory
@@ -47,14 +52,19 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
         #checks if you have enough karbonite and can built in the given location
         if gc.karbonite() > bc.UnitType.Factory.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Factory, d):
             gc.blueprint(unit.id, bc.UnitType.Factory, d)
-            currentFactories += 1
 
     # replicate a worker only if there are more factories than workers
-    if len(unitCounter.currentWorkers) < len(unitCounter.currentFactories):
+    # if len(unitCounter.currentWorkers) < len(unitCounter.currentFactories):
+    if True:
         if gc.can_replicate(unit.id, d):
             gc.replicate(unit.id, d)
 
             print(unit.id, "replicated")
+
+
+    # ---------------------------------------------------#
+    #             Work  Decisions                        #
+    # ---------------------------------------------------#
 
     #build nearby factories
     workerLoc = unit.location
@@ -82,33 +92,48 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
             # print(harvestTotal, " harvested!")
             break
 
+
+
+
+    # ---------------------------------------------------#
+    #             Move Decisions                         #
+    # ---------------------------------------------------#
+
     # if you don't have anything better to do. Move.
     if gc.is_move_ready(unit.id):
-        # if a factory needs to be built move towards it
-        if not targetFound:
+        factoryTargeted = False
+        rocketTargeted = False
+        karboniteTargeted = False
+
+
+        if workerTargetList.hasTarget(unit.id):
+            currentTarget = isTargetValid(workerTargetList.getCurrentTarget(unit.id), unit.id, persistentMap)
+
+        if not currentTarget:
+            # if a factory needs to be built move towards it
             for i in range(len(unitCounter.currentFactories)):
                 thisFactory = unitCounter.currentFactories[i]
                 if(thisFactory.health<thisFactory.max_health):
                     print("targeting Factory")
-                    targetLoc = thisFactory.location.map_location()
-                    targetFound = True
-        
-            if not targetFound:
+                    workerTargetList.addToList(unit.id,thisFactory.location.map_location())
+                    factoryTargeted = True
+
+            # else if a rocket needs to build move towards it
+            if not factoryTargeted:
                 for i in range(len(unitCounter.currentRockets)):
                     thisRocket = unitCounter.currentRockets[i]
                     if(thisRocket.health<thisRocket.max_health):
                         print("targeting Rocket")
-                        targetLoc = thisRocket.location.map_location()
-                        targetFound = True
+                        workerTargetList.addToList(unit.id, thisRocket.location.map_location())
                     
         # locate closest karbonite deposit that still has karbonite in it
         
             
-            if workerMapLoc.planet == bc.Planet.Earth and not targetFound:
+            if workerMapLoc.planet == bc.Planet.Earth and not rocketTargeted:
                 print("looking for karbonite")
                 distance = 100000
-                for y in range(len(persistentMap.earthMap)):
-                    for x in range(len(persistentMap.earthMap[0])):
+                for x in range(len(persistentMap.earthMap)):
+                    for y in range(len(persistentMap.earthMap[0])):
                         #check if there is karbonite at that location
                         if persistentMap.earthMap[x][y].karbonite > 0 and persistentMap.earthMap[x][y].passable:
                             #get distance to that location
@@ -117,14 +142,14 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
                             # print(newDistance, distance)
                             if newDistance < distance:
                                 distance = newDistance
-                                targetLoc = currentLoc
-                                targetFound = True
-                                print("targeting karbonite at", targetLoc)
+                                workerTargetList.addToList(unit.id, currentLoc)
+                                karboniteTargeted = True
+                                print("targeting karbonite")
+            
+            currentTarget = workerTargetList.getCurrentTarget(unit.id)
 
-        elif targetFound:
-            direction = workerMapLoc.direction_to(targetLoc)
-            if persistentMap.earthMap[targetLoc.x][targetLoc.y].karbonite or not persistentMap.earthMap[targetLoc.x][targetLoc.y].passable< 0:
-                targetFound = False
+        if workerTargetList.hasTarget(unit.id):
+            direction = workerMapLoc.direction_to(currentTarget)
         
             
             if gc.can_move(unit.id, direction):
@@ -132,5 +157,22 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
                 gc.move_robot(unit.id, direction) 
 
             elif gc.can_move(unit.id, d):
-                print("moving randomly")
+                print("movement blocked - moving randomly")
                 gc.move_robot(unit.id, d)
+
+        elif gc.can_move(unit.id, d):
+            print("target not found - moving randomly")
+            gc.move_robot(unit.id, d)
+
+def isTargetValid(mapTarget, id, persistentMap):
+    if mapTarget: 
+        if not persistentMap.earthMap[mapTarget.x][mapTarget.y].karbonite > 0 or \
+        not persistentMap.earthMap[mapTarget.x][mapTarget.y].passable:
+            # invalid target
+            workerTargetList.clearCurrentTarget(id)
+            return 0
+        
+        else:
+            return mapTarget
+    else:
+        return 0

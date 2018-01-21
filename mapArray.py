@@ -88,7 +88,7 @@ class smartMap:
 			self.marsMap[mapLoc.x][mapLoc.y].karbonite -= amount
 
 	def updateUnit(self, mapLoc, unitType, team):
-		print("updating map")
+		# print("updating map")
 		if mapLoc.planet == self.bc.Planet.Earth:
 			self.earthMap[mapLoc.x][mapLoc.y].unit = unitType
 			self.earthMap[mapLoc.x][mapLoc.y].team = team
