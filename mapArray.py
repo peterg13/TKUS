@@ -21,8 +21,8 @@ class smartMap:
 
 		# download karbonite and passable terrain locations for Earth
 
-		for j in range(earth.width):
-		    for i in range(earth.height):
+		for j in range(earth.height):
+		    for i in range(earth.width):
 		        thisLocation = self.bc.MapLocation(self.bc.Planet.Earth, i, j)
 		        newData = Data()
 		        newData.x = i

@@ -43,6 +43,13 @@ class targetList:
                 return True
 
         return False
+    
+    def targetAlreadyTaken(self, mapTarget):
+        for i in range(len(self.unitTargetList)):
+            if self.unitTargetList[i].mapTarget == mapTarget:
+                return True
+
+        return False
 
     # if the unit doesn't have a valunit_id target clear it so a new one can be added
     def clearCurrentTarget(self, unit_id):

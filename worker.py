@@ -12,7 +12,8 @@ import targetList
 #1. Factories are always the first thing to build
 #2. Each team gets 10 Karbonite per round and a factory takes 5 rounds to build a robot. Unless we're mining deposits we should never have more than 3 factories
 maxRockets = 1
-maxFactories = 10
+maxFactories = 4
+maxWorkers = 5
 maxRangers = 5
 maxKnights = 10
 
@@ -23,11 +24,14 @@ workerTargetList = targetList.targetList()
 
 directions = list(bc.Direction)
 
+karboniteLeft = True
+
 def workerLogic(unit, gc, unitCounter, persistentMap):
     global currentRockets
     global currentFactories
     global distance
     global harvestTotal
+    global karboniteLeft
     currentTarget = 0
 
     # print(workerTargetList)
@@ -55,7 +59,8 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
 
     # replicate a worker only if there are more factories than workers
     # if len(unitCounter.currentWorkers) < len(unitCounter.currentFactories):
-    if True:
+    if len(unitCounter.currentWorkers) < maxWorkers:
+    # if True:
         if gc.can_replicate(unit.id, d):
             gc.replicate(unit.id, d)
 
@@ -82,15 +87,16 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
                     continue
 
     # check if there is any karbonite around to harvest
-    for i in directions:
-        direction = directions[i]
-        if gc.can_harvest(unit.id, direction):
-            gc.harvest(unit.id, direction)
-            harvestMapLoc = workerMapLoc.add(direction)
-            persistentMap.updateKarbonite(harvestMapLoc, unit.worker_harvest_amount())
-            harvestTotal += unit.worker_harvest_amount()
-            # print(harvestTotal, " harvested!")
-            break
+    if karboniteLeft:
+        for i in directions:
+            direction = directions[i]
+            if gc.can_harvest(unit.id, direction):
+                gc.harvest(unit.id, direction)
+                harvestMapLoc = workerMapLoc.add(direction)
+                persistentMap.updateKarbonite(harvestMapLoc, unit.worker_harvest_amount())
+                harvestTotal += unit.worker_harvest_amount()
+                # print(harvestTotal, " harvested!")
+                break
 
 
 
@@ -129,22 +135,28 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
         # locate closest karbonite deposit that still has karbonite in it
         
             
-            if workerMapLoc.planet == bc.Planet.Earth and not rocketTargeted:
+            if workerMapLoc.planet == bc.Planet.Earth and not rocketTargeted and karboniteLeft:
                 print("looking for karbonite")
                 distance = 100000
+                karboniteLeft = False
                 for x in range(len(persistentMap.earthMap)):
                     for y in range(len(persistentMap.earthMap[0])):
                         #check if there is karbonite at that location
                         if persistentMap.earthMap[x][y].karbonite > 0 and persistentMap.earthMap[x][y].passable:
                             #get distance to that location
+                            karboniteLeft = True
                             currentLoc = bc.MapLocation(bc.Planet.Earth, x, y)
                             newDistance = workerMapLoc.distance_squared_to(currentLoc)
                             # print(newDistance, distance)
-                            if newDistance < distance:
+                            if newDistance < distance and not workerTargetList.targetAlreadyTaken(currentLoc):
                                 distance = newDistance
                                 workerTargetList.addToList(unit.id, currentLoc)
                                 karboniteTargeted = True
                                 print("targeting karbonite")
+                                if distance<2:
+                                    print("karbonite is close ending loop") 
+                                    break
+                                    
             
             currentTarget = workerTargetList.getCurrentTarget(unit.id)
 
