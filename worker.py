@@ -54,8 +54,8 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
             gc.blueprint(unit.id, bc.UnitType.Factory, d)
 
     # replicate a worker only if there are more factories than workers
-    # if len(unitCounter.currentWorkers) < len(unitCounter.currentFactories):
-    if True:
+    if len(unitCounter.currentWorkers) < len(unitCounter.currentFactories):
+    #if True:
         if gc.can_replicate(unit.id, d):
             gc.replicate(unit.id, d)
 

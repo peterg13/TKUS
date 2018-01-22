@@ -11,6 +11,7 @@ import knight
 import ranger
 import mage
 import healer
+import helperFunctions
 
 print("pystarting")
 
@@ -49,6 +50,8 @@ unitCounter = unitCounter.unitCounter()
 
 # earthMap = [[0 for x in range(20)] for y in range(20)]
 
+
+
 while True:
     # We only support Python 3, which means brackets around print()
     # print('pyround:', gc.round())
@@ -72,9 +75,24 @@ while True:
             else:
                 unitCounter.currentHealers.append(unit)
 
+        quads = [0, 0, 0, 0] #quads[0] = quadrant 1, quads[1] = quadrant 2, etc
+
         # walk through our units:
         for unit in gc.my_units():
+
+            mapHeight = 0
+            mapWidth = 0
+
+            #save the height and width of the map depending on which planet the unit is on
+            if unit.location.is_on_planet(bc.Planet.Earth):
+                mapHeight = gc.starting_map(bc.Planet.Earth).height
+                mapWidth = gc.starting_map(bc.Planet.Earth).width
+            else:
+                mapHeight = gc.starting_map(bc.Planet.Mars).height
+                mapWidth = gc.starting_map(bc.Planet.Mars).width
             
+            #adds a number to the global quads variable based ono the units quad
+            helperFunctions.addToQuad(quads, unit, mapWidth, mapHeight, gc)
 
 
             #factory logic
@@ -93,7 +111,7 @@ while True:
 
             #knight logic
             elif unit.unit_type == bc.UnitType.Knight:
-                knight.knightLogic(unit, gc)
+                knight.knightLogic(unit, quads, mapWidth, mapHeight, gc)
 
             #Ranger logic
             elif unit.unit_type == bc.UnitType.Ranger:
