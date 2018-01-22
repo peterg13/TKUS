@@ -21,9 +21,9 @@ def factoryLogic(unit, gc, unitCounter, persistentMap):
     #     except:
     #         print('Error producing a ranger :/')
     # build knights
-    # elif gc.can_produce_robot(unit.id, bc.UnitType.Knight):
-    #     try:
-    #         gc.produce_robot(unit.id, bc.UnitType.Knight)
-    #         print('produced a knight!')
-    #     except:
-    #         print('Error producing a knight')
+    elif gc.can_produce_robot(unit.id, bc.UnitType.Knight):
+        try:
+            gc.produce_robot(unit.id, bc.UnitType.Knight)
+            print('produced a knight!')
+        except:
+            print('Error producing a knight')
