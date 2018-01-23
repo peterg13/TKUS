@@ -17,8 +17,14 @@ def factoryLogic(unit, gc, unitCounter, persistentMap):
             print('unloaded a thing')
             gc.unload(unit.id, d)
 
-    
-    if len(unitCounter.currentKnights)<maxKnights:
+    if len(unitCounter.currentWorkers)< 1:
+        if gc.can_produce_robot(unit.id, bc.UnitType.Worker):
+            try:
+                gc.produce_robot(unit.id, bc.UnitType.Worker)
+                print('produced a Worker!')
+            except:
+                print('Error producing a worker')
+    elif len(unitCounter.currentKnights)<maxKnights:
         if gc.can_produce_robot(unit.id, bc.UnitType.Knight):
             try:
                 gc.produce_robot(unit.id, bc.UnitType.Knight)
@@ -46,12 +52,5 @@ def factoryLogic(unit, gc, unitCounter, persistentMap):
                 print('produced a Healer!')
             except:
                 print('Error producing a Healer')
-    # build rangers
-    # elif currentResearch.get_level(bc.UnitType.Ranger) > 1 and gc.can_produce_robot(unit.id, bc.UnitType.Ranger) and len(unitCounter.currentRangers) < 5:
-    #     try:
-    #         gc.produce_robot(unit.id, bc.UnitType.Ranger)
-    #         print("produced a ranger")
-    #     except:
-    #         print('Error producing a ranger :/')
-    # build knights
+
     

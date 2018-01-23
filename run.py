@@ -72,6 +72,8 @@ while True:
                 unitCounter.currentKnights.append(unit)
             elif unit.unit_type == bc.UnitType.Mage:
                 unitCounter.currentMages.append(unit)
+            elif unit.unit_type == bc.UnitType.Ranger:
+                unitCounter.currentRangers.append(unit)
             else:
                 unitCounter.currentHealers.append(unit)
 

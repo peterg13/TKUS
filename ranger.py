@@ -31,7 +31,7 @@ def tryToAttack():
         return False
 
     for enemy in nearbyEnemies:
-        if gc.can_attack(unit.id, enemy.id):
+        if gc.can_attack(unit.id, enemy.id) and unit.attack_heat() < 10 :
             gc.attack(unit.id, enemy.id)
             return True
 
