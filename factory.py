@@ -2,7 +2,10 @@ import battlecode as bc
 import random
 
 directions = list(bc.Direction)
-
+maxKnights = 10
+maxMages = 5
+maxRangers = 5
+maxHealers = 5
 
 
 def factoryLogic(unit, gc, unitCounter, persistentMap):
@@ -13,6 +16,36 @@ def factoryLogic(unit, gc, unitCounter, persistentMap):
         if gc.can_unload(unit.id, d):
             print('unloaded a thing')
             gc.unload(unit.id, d)
+
+    
+    if len(unitCounter.currentKnights)<maxKnights:
+        if gc.can_produce_robot(unit.id, bc.UnitType.Knight):
+            try:
+                gc.produce_robot(unit.id, bc.UnitType.Knight)
+                print('produced a knight!')
+            except:
+                print('Error producing a knight')
+    elif len(unitCounter.currentMages)<maxMages:
+        if gc.can_produce_robot(unit.id, bc.UnitType.Mage):
+            try:
+                gc.produce_robot(unit.id, bc.UnitType.Mage)
+                print('produced a Mage!')
+            except:
+                print('Error producing a Mage')
+    elif len(unitCounter.currentRangers)<maxRangers:
+        if gc.can_produce_robot(unit.id, bc.UnitType.Ranger):
+            try:
+                gc.produce_robot(unit.id, bc.UnitType.Ranger)
+                print('produced a Ranger!')
+            except:
+                print('Error producing a Ranger')
+    elif len(unitCounter.currentHealers)<maxHealers:
+        if gc.can_produce_robot(unit.id, bc.UnitType.Healer):
+            try:
+                gc.produce_robot(unit.id, bc.UnitType.Healer)
+                print('produced a Healer!')
+            except:
+                print('Error producing a Healer')
     # build rangers
     # elif currentResearch.get_level(bc.UnitType.Ranger) > 1 and gc.can_produce_robot(unit.id, bc.UnitType.Ranger) and len(unitCounter.currentRangers) < 5:
     #     try:
@@ -21,9 +54,4 @@ def factoryLogic(unit, gc, unitCounter, persistentMap):
     #     except:
     #         print('Error producing a ranger :/')
     # build knights
-    elif gc.can_produce_robot(unit.id, bc.UnitType.Knight):
-        try:
-            gc.produce_robot(unit.id, bc.UnitType.Knight)
-            print('produced a knight!')
-        except:
-            print('Error producing a knight')
+    

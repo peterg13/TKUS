@@ -1,25 +1,38 @@
 import battlecode as bc 
 import random
 
-targetLocationX = 5
-targetLocationY = 19
+directions = list(bc.Direction)
+unit = 0
+gc = 0
 
-def rangerLogic(unit, gc):
-	global targetLocationX
-	global targetLocationY
+def rangerLogic(unitParam, gcParam):
+    global unit
+    global gc
+    unit = unitParam
+    gc = gcParam
+    if not unit.location.is_in_garrison():
+        if tryToAttack() == False:
+            d = random.choice(directions)
+            if gc.is_move_ready(unit.id) and gc.can_move(unit.id, d):
+                gc.move_robot(unit.id, d)	
 
-	if targetLocationX and targetLocationY:
-		target = bc.MapLocation(bc.Planet.Earth, targetLocationX, targetLocationY)
-		# print('is snipe ready?: ', gc.is_begin_snipe_ready(unit.id))
-		# print('can begin snipe?: ', gc.can_begin_snipe(unit.id, target))
-		# print('ranger research level: ', gc.research_info().get_level(bc.UnitType.Ranger))
-		# print(unit.ranger_is_sniping())
-		if unit.ranger_is_sniping():
-			print(unit.id, "snipe countdown: ", unit.ranger_countdown())
 
-		if gc.is_begin_snipe_ready(unit.id) and gc.can_begin_snipe(unit.id, target):
-			if unit.ability_heat() < 10 and unit.ability_cooldown()>199:
-				if unit.ranger_is_sniping():
-					print(unit.id, "snipe countdown: ", unit.ranger_countdown())
-				else:
-					gc.begin_snipe(unit.id, target)
+
+def tryToAttack():
+
+    nearbyEnemies = []
+    if unit.team == bc.Team.Red:
+        nearbyEnemies = gc.sense_nearby_units_by_team(unit.location.map_location(), 2, bc.Team.Blue)
+    else:
+        nearbyEnemies = gc.sense_nearby_units_by_team(unit.location.map_location(), 2, bc.Team.Red)
+
+    #if there are no enemies then return false
+    if len(nearbyEnemies) == 0:
+        return False
+
+    for enemy in nearbyEnemies:
+        if gc.can_attack(unit.id, enemy.id):
+            gc.attack(unit.id, enemy.id)
+            return True
+
+    return False

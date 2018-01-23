@@ -14,8 +14,6 @@ import targetList
 maxRockets = 1
 maxFactories = 4
 maxWorkers = 5
-maxRangers = 5
-maxKnights = 10
 
 harvestTotal = 0
 
@@ -58,14 +56,8 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
             gc.blueprint(unit.id, bc.UnitType.Factory, d)
 
     # replicate a worker only if there are more factories than workers
-<<<<<<< HEAD
-    # if len(unitCounter.currentWorkers) < len(unitCounter.currentFactories):
-    if len(unitCounter.currentWorkers) < maxWorkers:
-    # if True:
-=======
     if len(unitCounter.currentWorkers) < len(unitCounter.currentFactories):
     #if True:
->>>>>>> 9ff5c908e92b9925cc3cf53cd8431ef3696cc62b
         if gc.can_replicate(unit.id, d):
             gc.replicate(unit.id, d)
 
