@@ -42,11 +42,11 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
     #             Build Decisions                        #
     # ---------------------------------------------------#
 
-    #creates a rocket
-    # if len(unitCounter.currentRockets) < maxRockets:
-    #     #checks if you have enough karbonite and can built in the given location
-    #     if gc.karbonite() > bc.UnitType.Rocket.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Rocket, d):
-    #         gc.blueprint(unit.id, bc.UnitType.Rocket, d)
+    # creates a rocket
+    if len(unitCounter.currentRockets) < maxRockets:
+        #checks if you have enough karbonite and can built in the given location
+        if gc.karbonite() > bc.UnitType.Rocket.blueprint_cost() and gc.can_blueprint(unit.id, bc.UnitType.Rocket, d):
+            gc.blueprint(unit.id, bc.UnitType.Rocket, d)
     
 
     #create a factory

@@ -5,6 +5,8 @@ class Data(object):
 class smartMap:
 	earthMap = 0
 	marsMap = 0
+	earth = 0
+	mars = 0
 	
 	def __init__(self,gc,bc):
 		self.gc = gc
@@ -13,16 +15,16 @@ class smartMap:
 		#downloading earth information
 	def initializeMapArrays(self):
 
-		earth = self.gc.starting_map(self.bc.Planet.Earth)
-		mars = self.gc.starting_map(self.bc.Planet.Mars)
+		self.earth = self.gc.starting_map(self.bc.Planet.Earth)
+		self.mars = self.gc.starting_map(self.bc.Planet.Mars)
 
-		self.earthMap = [[0 for x in range(earth.width)] for y in range(earth.height)]
-		self.marsMap = [[0 for x in range(mars.width)] for y in range(mars.height)]
+		self.earthMap = [[0 for x in range(self.earth.width)] for y in range(self.earth.height)]
+		self.marsMap = [[0 for x in range(self.mars.width)] for y in range(self.mars.height)]
 
 		# download karbonite and passable terrain locations for Earth
 
-		for j in range(earth.height):
-		    for i in range(earth.width):
+		for j in range(self.earth.height):
+		    for i in range(self.earth.width):
 		        thisLocation = self.bc.MapLocation(self.bc.Planet.Earth, i, j)
 		        newData = Data()
 		        newData.x = i
@@ -32,10 +34,10 @@ class smartMap:
 		        newData.passable = True
 		        newData.karbonite = 0
 
-		        if earth.is_passable_terrain_at(thisLocation):
+		        if self.earth.is_passable_terrain_at(thisLocation):
 		            newData.passable = True
-		            if earth.initial_karbonite_at(thisLocation):
-		            	newData.karbonite = earth.initial_karbonite_at(thisLocation)
+		            if self.earth.initial_karbonite_at(thisLocation):
+		            	newData.karbonite = self.earth.initial_karbonite_at(thisLocation)
 		            	# print(earth.initial_karbonite_at(thisLocation), " Karbonite found!")
 		            else:
 		            	newData.karbonite = 0
@@ -46,8 +48,8 @@ class smartMap:
 		       	self.earthMap[i][j] = newData
 
 		# download karbonite and passable terrain locations for Mars
-		for d in range(mars.width):
-		    for c in range(mars.height):
+		for d in range(self.mars.width):
+		    for c in range(self.mars.height):
 		        thisLocation = self.bc.MapLocation(self.bc.Planet.Mars, c, d)
 		        newData = Data()
 		        newData.x = c
@@ -55,10 +57,10 @@ class smartMap:
 		        newData.unit = 'unknown'
 		        newData.team = 'neutral'
 
-	        	if mars.is_passable_terrain_at(thisLocation):
+	        	if self.mars.is_passable_terrain_at(thisLocation):
 	        		newData.passable = True
-	        		if mars.initial_karbonite_at(thisLocation):
-			        	newData.karbonite = mars.initial_karbonite_at(thisLocation)
+	        		if self.mars.initial_karbonite_at(thisLocation):
+			        	newData.karbonite = self.mars.initial_karbonite_at(thisLocation)
 			        	# print(mars.initial_karbonite_at(thisLocation), " Karbonite found!")
 			        else:
 			        	newData.karbonite = 0
@@ -67,18 +69,6 @@ class smartMap:
 	        		newData.karbonite = 0
 
 		       	self.marsMap[c][d] = newData
-
-	def addToMap(self, data):
-		if(data.planet == 'earth'):
-			self.earthMap[data.x][data.y] = data 
-		if(data.planet == 'mars'):
-			self.marsMap[data.x][data.y] = data
-
-	def removeFromMap(self, data):
-		if(data.planet == 'earth'):
-			self.earthMap[data.x][data.y] = 0
-		if(data.planet == 'mars'):
-			self.marsMap[data.x][data.y] = 0
 
 	def updateKarbonite(self, mapLoc, amount):
 		if mapLoc.planet == self.bc.Planet.Earth:
@@ -93,10 +83,31 @@ class smartMap:
 			self.earthMap[mapLoc.x][mapLoc.y].unit = unitType
 			self.earthMap[mapLoc.x][mapLoc.y].team = team
 			self.earthMap[mapLoc.x][mapLoc.y].passable = False
+		
+		if mapLoc.planet == self.bc.Planet.Mars:
+			self.marsMap[mapLoc.x][mapLoc.y].unit = unitType
+			self.marsMap[mapLoc.x][mapLoc.y].team = team
+			self.marsMap[mapLoc.x][mapLoc.y].passable = False
 
 	def getMapData(self, mapLocation):
-		if mapLocation.planet == bc.Planet.Earth:
+		if mapLocation.planet == self.bc.Planet.Earth:
 			return self.earthMap[mapLocation.x][mapLocation.y]
 
-		if mapLocation.planet == bc.Planet.Mars:
+		if mapLocation.planet == self.bc.Planet.Mars:
 			return self.marsMap[mapLocation.x][mapLocation.y]
+	
+	def checkPassable(self, mapLocation):
+		if mapLocation.planet == self.bc.Planet.Earth:
+			if mapLocation.x <= self.earth.width and mapLocation.y <= self.earth.height:
+				if self.earthMap[mapLocation.x][mapLocation.y].passable:
+					return True
+				else:
+					return False
+
+		if mapLocation.planet == self.bc.Planet.Mars:
+			if mapLocation.x <= self.mars.width and mapLocation.y <= self.mars.height:
+
+				if self.marsMap[mapLocation.x][mapLocation.y].passable:
+					return True
+				else:
+					return False
