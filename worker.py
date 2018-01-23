@@ -131,7 +131,7 @@ def workerLogic(unit, gc, unitCounter, persistentMap):
                         thisRocket = unitCounter.currentRockets[i]
                         rocketLoc = thisRocket.location.map_location()
                         if rocketLoc.planet == bc.Planet.Earth:
-                            if thisRocket.structure_is_built:
+                            if thisRocket.structure_is_built and unit.location.planet == bc.Planet.Earth:
                                 workerTargetList.addToList(unit.id, rocketLoc)
                             elif thisRocket.health<thisRocket.max_health and not workerTargetList.targetAlreadyTaken(rocketLoc):
                                 print("targeting Rocket")

@@ -33,7 +33,7 @@ def handleRocket(unit, gc, persistentMapParam):
                     if currentScore >= 8:
                         break
 
-        if gc.can_launch_rocket(unit.id, currentLocation) and len(unit.structure_garrison())>0:
+        if gc.can_launch_rocket(unit.id, currentLocation) and len(unit.structure_garrison())>6:
             gc.launch_rocket(unit.id, currentLocation)
             persistentMap.updateUnit(currentLocation, 'Rocket', 'Friendly')
             print('Rocket Launched!')
