@@ -19,3 +19,14 @@ def addToQuad(quads, unit, mapWidth, mapHeight, gc):
                 quads[3] += 1
             else:
                 quads[0] += 1
+
+
+def countDeployDirections(currentLoc):
+    # the higher the score the better the location
+    locationScore = 0
+    for i in directions:
+        testDirection = currentLoc.add(directions[i])
+        if persistentMap.checkPassable(testDirection):
+            locationScore+=1
+    
+    return locationScore

@@ -1,8 +1,12 @@
 import battlecode as bc
+import random
 # This will handle everything that rockets need to do
+
 
 directions = list(bc.Direction)
 persistentMap = 0
+
+directions = list(bc.Direction)
 
 def handleRocket(unit, gc, persistentMapParam):
     global persistentMap
@@ -29,16 +33,24 @@ def handleRocket(unit, gc, persistentMapParam):
                     if currentScore >= 8:
                         break
 
-        if gc.can_launch_rocket(unit.id, currentLocation):
+        if gc.can_launch_rocket(unit.id, currentLocation) and len(unit.structure_garrison())>0:
             gc.launch_rocket(unit.id, currentLocation)
-            print(persistentMap.checkPassable(currentLocation))
             persistentMap.updateUnit(currentLocation, 'Rocket', 'Friendly')
             print('Rocket Launched!')
+
+    elif rocketLoc.planet == bc.Planet.Mars:
+        garrison = unit.structure_garrison()
+        d = random.choice(directions)
+        if len(garrison) > 0:
+            d = random.choice(directions)
+            if gc.can_unload(unit.id, d):
+                print('unloaded a thing')
+                gc.unload(unit.id, d)
     
     return
 
 def countDeployDirections(currentLoc):
-    # the higher the score the better
+    # the higher the score the better the location
     locationScore = 0
     for i in directions:
         testDirection = currentLoc.add(directions[i])
